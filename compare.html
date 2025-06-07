@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" data-theme="dark">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Poly Haven Comparison - DiffusionLight: Light Probes for Free by Painting a Chrome Ball </title>
+  <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" rel="stylesheet">
+    <link rel="icon" href="assets/images/icon_32x32.png" type="image/png" sizes="32x32">
+    <style>
+        body {
+            margin: 0;
+            background-color: rgb(9, 10, 12);
+        }
+
+        /* Center navbar */
+        .navbar-brand {
+            flex: 1;
+        }
+
+        .level .level-item {
+            min-height: 3.25rem;
+        }
+
+        .level a.level-item {
+            color: rgba(0, 0, 0, .7);
+        }
+
+        /* active menu */
+        .controls .active {
+            background: #485fc7 !important;
+            color: #fff !important;
+        }
+
+        @media only screen and (min-width: 681px) {
+            .vistec-offset {
+                top: -15px;
+            }
+        }
+
+        /* hero */
+        .hero .title,
+        #control_tip {
+            text-align: center;
+        }
+
+        #page-hero {
+        }
+
+        #dataset-name {
+            text-decoration: underline;
+        }
+
+
+        .is-horizontal-center {
+            justify-content: center;
+        }
+
+        .card {
+            height: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .columns-last-child {
+            margin-bottom: calc(1.5rem - 0.75rem) !important;
+        }
+
+        .card-for-mobile.card {
+            margin-bottom: 0px;
+        }
+
+        .card-for-mobile.card .card-content {
+            padding: 4px;
+        }
+
+        /*
+        .card-for-mobile.card .card-content .columns-last-child{
+            margin-bottom: 0px !important;
+        }
+        */
+        .column-for-mobile {
+            padding-top: 0px;
+            padding-bottom: 0px;
+            margin-bottom: 4px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        .pagination-list li {
+            margin-bottom: 0.5rem;
+        }
+        /*
+        .card-for-mobile .column span{
+            min-height: 10rem;
+        }*/
+        .card {
+            height: 100%;
+            /* background-color: #f5f5f5 !important; */
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, .06), 0 0 0 1px rgba(10, 10, 10, .02);
+            /* box-shadow: none !important; */
+            color: #4a4a4a;
+            max-width: 100%;
+            position: relative;
+        }
+        .is-hidden{
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="compare-app">
+        <nav class="navbar is-fixed-top is-light is-hidden-touch" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <p class="navbar-item">
+                    <a href="index.html" style="color:#4a4a4a"><b>DiffusionLight-Turbo</b></a>
+                </p>
+                <p class="navbar-item">
+                    <a href="index.html" style="color:#4a4a4a">Go Back</a>
+                </p>
+                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+                    data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+            <div id="navbarBasicExample" class="navbar-menu is-mobile">
+                <div class="controls navbar-start s0">
+                    <a class="navbar-item" :class="{ active: show_method==0 }" @mouseover="select_method(0)">
+                        ALL
+                    </a>
+                    <a class="navbar-item" :class="{ active: show_method==1 }" @mouseover="select_method(1)">
+                        1) Ground Truth
+                    </a>
+                    <a class="navbar-item" :class="{ active: show_method==2 }"
+                        @mouseover="select_method(2)">
+                        2) DiffusionLight-Turbo
+                    </a>
+                    <a class="navbar-item" :class="{ active: show_method==3 }" @mouseover="select_method(3)">
+                        3) DiffusionLight
+                    </a>
+                    <a v-if="dataset_dir != 'array_of_spheres'" class="navbar-item" :class="{ active: show_method==4 }"
+                        @mouseover="select_method(4)">
+                        4) StyleLight
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <nav class="navbar is-fixed-top is-light level is-mobile is-hidden-desktop controls s0 ">
+            <a class="level-item has-text-centered" :class="{ active: show_method==0 }" @mouseover="select_method(0); gtag('event', 'view_result_all', {'event_category' : 'mouse_hover', 'event_label' : 'view_result_all'})"
+                @click="select_method(0)">
+                All
+            </a>
+            <a class="level-item has-text-centered" :class="{ active: show_method==1 }" @mouseover="select_method(1); gtag('event', 'view_result_gt', {'event_category' : 'mouse_hover', 'event_label' : 'view_result_gt'})"
+                @click="select_method(1)">
+                Ground Truth
+            </a>
+            <a class="level-item has-text-centered" :class="{ active: show_method==2 }" @mouseover="select_method(2); gtag('event', 'view_result_diffusionlight_turbo', {'event_category' : 'mouse_hover', 'event_label' : 'view_result_diffusionlight_turbo'})"
+                @click="select_method(2)">
+                Turbo
+            </a>
+            <a class="level-item has-text-centered" :class="{ active: show_method==3 }" @mouseover="select_method(3); gtag('event', 'view_result_diffusionlight', {'event_category' : 'mouse_hover', 'event_label' : 'view_result_diffusionlight'})"
+                @click="select_method(3)">
+                DiffusionLight
+            </a>
+            <a v-if="dataset_dir != 'array_of_spheres'" class="level-item has-text-centered"
+                :class="{ active: show_method==4 }" @mouseover="select_method(4)" @click="select_method(4); gtag('event', 'view_result_stylelight', {'event_category' : 'mouse_hover', 'event_label' : 'view_result_stylelight'})">
+                StyleLight
+            </a>
+        </nav>
+        <section class="hero is-dark" id="page-hero">
+            <div class="hero-body">
+                <div class="container is-fluid">
+                    <h1 class="title">
+                        Comparison on <span id="dataset-name">{{dataset_name}}</span> dataset
+                    </h1>
+                </div>
+            </div>
+        </section>
+        <section class="is-hidden-touch">
+            <div id="control_tip" class="notification">
+                Press number 1 - <span id="dataset-count-method">{{max_avalible_method}}</span> or hover over the top
+                menu to switch between the methods
+            </div>
+        </section>
+        <section class="is-hidden-desktop">
+            <div id="control_tip" class="notification">
+                Click the top menu to switch between the methods
+            </div>
+        </section>
+        
+
+       
+
+        <section class="section">
+            <div class="container">
+                <div style="padding:5em;" v-if="scenes.length == 0">
+                    <progress class="progress is-danger" max="100">30%</progress>
+                </div>
+                <!-- PolyHaven & Indoor datset-->
+                <div v-if="dataset_dir != 'array_of_spheres'">
+                    <div class="columns is-multiline">
+                        <div class="column-for-mobile column is-full-mobile is-full-tablet is-one-third-fullhd is-half-desktop"
+                            v-for="scene, index in scenes.slice((page_id-1) * item_per_page , page_id * item_per_page)">
+                            <div class="card-for-mobile card">
+                                <div class="card-content">
+                                    <!-- Desktop -->
+                                    <div class="is-hidden-desktop is-hidden-touch">
+                                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                                            <div class="column ">
+                                                <span class="has-text-weight-bold">
+                                                    <a v-if="dataset_dir == 'polyhaven'" class="is-link input_title"
+                                                        :href="'https://polyhaven.com/a/'+scene" target="_blank">
+                                                        {{ scene }}
+                                                    </a>
+                                                    <span v-if="dataset_dir != 'polyhaven'" class="is-link input_title">
+                                                        {{ scene }} 
+                                                        </sapn>
+                                                    </span>
+                                            </div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 1 }"></div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 1 }">
+                                                <span class="has-text-weight-bold">Ground Truth</span>
+                                            </div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 1 }"></div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 2 }"></div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 2 }">
+                                                <span class="has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span>
+                                            </div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 2 }"></div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 3 }"></div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 3 }">
+                                                <span class="has-text-weight-bold">Diffusion&#8203;Light</span>
+                                            </div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 3 }"></div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 4 }"></div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 4 }">
+                                                <span class="has-text-weight-bold">Style&#8203;Light</span>
+                                            </div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 4 }"></div>
+                                        </div>
+                                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                                            <div class="column is-flex is-horizontal-center">
+                                                <div v-if="dataset_dir != 'polyhaven'">
+                                                    <figure class="image">
+                                                        <img loading="lazy"
+                                                            :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/input/'+scene+tailed_str+'.png'"
+                                                            style="max-width:170px;">
+                                                    </figure>
+                                                </div>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 1 }">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/ground_truth/mirror/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 1 }">
+                                                <figure class="image">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/ground_truth/matte_silver/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 1 }">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/ground_truth/diffuse/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 2 }">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight-turbo/mirror/'+scene+tailed_str+'.png?v20250607'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 2 }">
+                                                <figure class="image">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight-turbo/matte_silver/'+scene+tailed_str+'.png?v20250607'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 2}">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight-turbo/diffuse/'+scene+tailed_str+'.png?v20250607'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 3 }">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight/mirror/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 3 }">
+                                                <figure class="image">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight/matte_silver/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 3}">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight/diffuse/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 4 }">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/stylelight/mirror/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 4 }">
+                                                <figure class="image">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/stylelight/matte_silver/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 4 }">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/stylelight/diffuse/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <!-- Mobile -->
+                                    <div class="">
+                                        <div class="columns is-mobile has-text-centered is-vcentered">
+                                            <div class="column is-flex is-horizontal-center is-one-quarter">
+                                                <div>
+                                                    <span class="has-text-weight-bold has-text-white">
+                                                        <a v-if="dataset_dir == 'polyhaven'" class="is-link input_title"
+                                                            :href="'https://polyhaven.com/a/'+scene" target="_blank">
+                                                            {{ scene.replaceAll("_", "&#8203;_").replaceAll("-",
+                                                            "&#8203;-") }}
+                                                        </a>
+                                                        <span v-if="dataset_dir != 'polyhaven'"
+                                                            class="is-link input_title">
+                                                            {{ scene.replaceAll("_", "&#8203;_").replaceAll("-",
+                                                            "&#8203;-") }}
+                                                            </sapn>
+                                                        </span>
+                                                </div>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center  is-three-quarter">
+                                                <div v-if="dataset_dir == 'polyhaven'">
+                                                    <a :href="'https://polyhaven.com/a/'+scene" target="_blank">
+                                                        <figure class="image">
+                                                            <img loading="lazy"
+                                                                :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/input/'+scene+tailed_str+'.png'"
+                                                                style="max-width:170px;">
+                                                        </figure>
+                                                    </a>
+                                                </div>
+                                                <div v-if="dataset_dir != 'polyhaven'">
+                                                    <figure class="image">
+                                                        <img loading="lazy"
+                                                            :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/input/'+scene+tailed_str+'.png'"
+                                                            style="max-width:170px;">
+                                                    </figure>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="columns is-mobile has-text-centered is-vcentered"
+                                            :class="{'is-hidden': show_method !=0 && show_method != 1 }">
+                                            <div class="column is-flex is-horizontal-center has-text-white">
+                                                <span class="has-text-weight-bold">Ground Truth</span>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/ground_truth/mirror/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/ground_truth/matte_silver/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/ground_truth/diffuse/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                        </div>
+                                        <div class="columns is-mobile has-text-centered is-vcentered"
+                                            :class="{'is-hidden': show_method !=0 && show_method != 2 }">
+                                            <div class="column is-flex is-horizontal-center has-text-white">
+                                                <span class="has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight-turbo/mirror/'+scene+tailed_str+'.png?v20250607'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight-turbo/matte_silver/'+scene+tailed_str+'.png?v20250607'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight-turbo/diffuse/'+scene+tailed_str+'.png?v20250607'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                        </div>
+                                        <div class="columns is-mobile has-text-centered is-vcentered has-text-white"
+                                            :class="{'is-hidden': show_method !=0 && show_method != 3 }">
+                                            <div class="column is-flex is-horizontal-center">
+                                                <span class="has-text-weight-bold">Diffusion&#8203;Light</span>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight/mirror/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight/matte_silver/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight/diffuse/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                        </div>
+                                        <div class="columns is-mobile has-text-centered is-vcentered columns-last-child"
+                                            :class="{'is-hidden': show_method !=0 && show_method != 4 }">
+                                            <div class="column is-flex is-horizontal-center has-text-white">
+                                                <span class="has-text-weight-bold">Style&#8203;Light</span>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/stylelight/mirror/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/stylelight/matte_silver/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/stylelight/diffuse/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End of mobile-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Array of sphere -->
+                <div v-if="dataset_dir == 'array_of_spheres'">
+                    <div class="columns is-multiline">
+                        <div v-for="scene, index in scenes.slice((page_id-1) * item_per_page , page_id * item_per_page)"
+                            class="column is-one-third-fullhd is-half-desktop is-full-tablet column-for-mobile">
+                            <div class="card card-for-mobile">
+                                <div class="card-content">
+                                    <!-- Desktop -->
+                                    <div class="">
+                                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                                            <div class="column ">
+                                                <span class="has-text-weight-bold  has-text-white">
+                                                    <span class="is-link">
+                                                        {{ scene.replaceAll("_", "&#8203;_").replaceAll("-", "&#8203;-")
+                                                        }}
+                                                        </sapn>
+                                                    </span>
+                                            </div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 1 }">
+                                                <span class="has-text-weight-bold has-text-white">Ground Truth</span>
+                                            </div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 2 }">
+                                                <span class="has-text-weight-bold has-text-white">Diffusion&#8203;Light-Turbo</span>
+                                            </div>
+                                            <div class="column"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 3 }">
+                                                <span class="has-text-weight-bold has-text-white">Diffusion&#8203;Light</span>
+                                            </div>
+                                        </div>
+                                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                                            <div class="column is-flex is-horizontal-center">
+                                                <div>
+                                                    <figure class="image">
+                                                        <img loading="lazy"
+                                                            :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/input/'+scene+tailed_str+'.png'">
+                                                    </figure>
+                                                </div>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 1}">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/ground_truth/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 2}">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight-turbo/'+scene+tailed_str+'.png?v20250607'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            <div class="column is-flex is-horizontal-center"
+                                                :class="{'is-hidden': show_method !=0 && show_method != 3}">
+                                                <figure class="image ">
+                                                    <img loading="lazy"
+                                                        :src="'https://diffusionlight.github.io/image-'+dataset_dir+'/diffusionlight/'+scene+tailed_str+'.png'"
+                                                        style="max-width:128px;">
+                                                </figure>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section style="padding-top:2em; padding-bottom: 2em;">
+            <div class="container">
+                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    <ul class="pagination-list">
+                        <li v-for="location_page in _.range(1, Math.ceil(scenes.length / item_per_page) + 1)">
+                            <a class="pagination-link" :class="{'is-current': page_id == location_page}"  @click="select_page(location_page)">{{location_page}}</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </section>
+    </div>
+    
+
+    <section class="hero"
+        style="background-color: white; padding-bottom:1em; padding-top:1em; border-top: solid 1px #888;">
+        <div style="margin: 0px; margin-top: 5px;">
+            <div class="container" style="text-align: center; vertica">
+                <a href="https://vistec.ist/vision" target="_blank"><img src="assets/images/logo/vision.png"
+                        style="width: 130px; display: inline; margin: 0 100px;"></a>
+                <a href="https://vistec.ac.th/" target="_blank"><img src="assets/images/logo/vistec_color.svg"
+                        class="vistec-offset"
+                        style="width: 130px; display: inline; margin: 0 100px; position:relative; "></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- JAVASCRIPT -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9BBTLD1V4J"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-9BBTLD1V4J');
+    </script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-virtual-scroller@2.0.0-beta.8/dist/vue-virtual-scroller.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.7/underscore-umd-min.min.js"></script>
+    
+    <script>
+        const {createApp, ref} = Vue
+        window.app = createApp({
+            setup() {
+                var max_avalible_method = ref(4);
+                var item_per_page = ref(30);
+                var page_id = ref(1);
+                var scene_name = "polyhaven";
+                var urlParams = new URLSearchParams(window.location.search);
+                var scene_name_param = urlParams.get('dataset');
+                if (scene_name_param) {
+                    if (scene_name_param == "indoor") {
+                        scene_name = "indoor";
+                        gtag('event', 'view_indoor', {'event_category' : 'pageview', 'event_label' : 'view_indoor'})
+                    }
+                    if (scene_name_param == "array_of_spheres") {
+                        scene_name = "array_of_spheres";
+                        gtag('event', 'view_arrayofsphere', {'event_category' : 'pageview', 'event_label' : 'view_arrayofsphere'})
+                    }
+                }else{
+                    gtag('event', 'view_polyhaven', {'event_category' : 'pageview', 'event_label' : 'view_polyhaven'})
+                }
+
+
+                var scenes = ref([]);
+                var dataset_dir = ref("polyhaven");
+                var tailed_str = ref("_4k");
+                var dataset_name = ref("Poly Haven");
+
+                if (scene_name == "indoor") {
+                    dataset_dir.value = "indoor";
+                    tailed_str.value = "";
+                    dataset_name.value = "Laval Indoor";
+                    document.title = "Laval Indoor Comparison - DiffusionLight: Light Probes for Free by Painting a Chrome Ball";
+                }
+                if (scene_name == "array_of_spheres") {
+                    dataset_dir.value = "array_of_spheres";
+                    tailed_str.value = "";
+                    dataset_name.value = "Array of spheres with Laval Indoor";
+                    max_avalible_method.value = 3;
+                    document.title = "Array of spheres with Laval Indoor Comparison - DiffusionLight: Light Probes for Free by Painting a Chrome Ball";
+                }
+
+                var show_method = ref(0);
+
+                var select_method = function (item) {
+                    if (item >= 0 && item <= max_avalible_method.value) {
+                        show_method.value = item;
+                    }
+                }
+                var select_page = function (item) {
+                    if (item >= 1 && item <= Math.ceil(scenes.value.length / item_per_page.value)) {
+                        page_id.value = item;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+                // register keydown 
+                function code(e) {
+                    e = e || window.event;
+                    return (e.keyCode || e.which);
+                }
+                document.body.addEventListener('keydown', function (e) {
+                    let k = code(e);
+                    if (k >= 49 && k <= 57) {
+                        if(k-48 == 0){
+                            gtag('event', 'view_result_all', {'event_category' : 'keypress', 'event_label' : 'view_result_all'})
+                        }
+                        if(k-48 == 1){
+                            gtag('event', 'view_result_gt', {'event_category' : 'keypress', 'event_label' : 'view_result_gt'})
+                        }
+                        if(k-48 == 2){
+                            gtag('event', 'view_result_diffusionlight_turbo', {'event_category' : 'keypress', 'event_label' : 'view_result_diffusionlight_turbo'})
+                        }
+                        if(k-48 == 3){
+                            gtag('event', 'view_result_diffusionlight', {'event_category' : 'keypress', 'event_label' : 'view_result_diffusionlight'})
+                        }
+                        if(k-48 == 4 && max_avalible_method.value <= 4){
+                            gtag('event', 'view_result_stylelight', {'event_category' : 'keypress', 'event_label' : 'view_result_stylelight'})
+                        }
+                        return select_method(k - 48);
+                    } else if (k >= 97 && k <= 105) {
+                        return select_method(k - 96);
+                    }
+                });
+                // fetch scene names
+                fetch('https://diffusionlight.github.io/image-' + scene_name + '/scenes.json')
+                    .then(response => response.json())
+                    .then(scenes_name => {
+                        scenes.value = scenes_name;
+                    });
+                return {
+                    max_avalible_method,
+                    dataset_name,
+                    show_method,
+                    select_method,
+                    dataset_dir,
+                    tailed_str,
+                    scenes,
+                    item_per_page,
+                    page_id,
+                    select_page
+                }
+            }
+        });
+        window.app.mount('#compare-app')
+    </script>
+</body>
+
+</html>

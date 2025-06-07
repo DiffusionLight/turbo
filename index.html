@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DiffusionLight: Light Probes for Free by Painting a Chrome Ball</title>
+  <link rel="icon" href="assets/images/icon_32x32.png" type="image/png" sizes="32x32">
+  <meta property="og:url" content="https://diffusionlight.github.io/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="DiffusionLight: Light Probes for Free by Painting a Chrome Ball" />
+  <meta property="og:description"
+    content="We present a simple yet effective technique to estimate lighting in a single input image. Our research uncovers a surprising relationship between the appearance of chrome balls and the initial diffusion noise map, which we utilize to consistently generate high-quality chrome balls. We further fine-tune an LDR diffusion model (Stable Diffusion XL) with LoRA, enabling it to perform exposure bracketing for HDR light estimation. Our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios." />
+  <meta property="og:image" content="https://diffusionlight.github.io/assets/images/in-the-wild/bed_ev-00_seed400.jpg" />
+  <meta name="description"
+    content="We present a simple yet effective technique to estimate lighting in a single input image. Our research uncovers a surprising relationship between the appearance of chrome balls and the initial diffusion noise map, which we utilize to consistently generate high-quality chrome balls. We further fine-tune an LDR diffusion model (Stable Diffusion XL) with LoRA, enabling it to perform exposure bracketing for HDR light estimation. Our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios." />
+  <meta name="keywords"
+    content="light estimation, diffusion model, relighting, chrome ball, inpainting, stable diffusion">
+  <meta name="google-site-verification" content="vKQD2CjY58aKxMAkgWU1kc7DUQqt2_GChgsbpaQXFJY" />
+  <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css" />
+  <style>
+    body {
+      margin: 0;
+      background-color: rgb(9, 10, 12);
+    }
+
+    .btn-more-result {
+      margin-top: 1em;
+    }
+
+    @media only screen and (min-width: 681px) {
+      .vistec-offset {
+        top: -15px;
+      }
+    }
+
+    /* mobile ui */
+    @media screen and (max-width: 768px) {
+      .media-content {
+        overflow-x: inherit;
+      }
+
+      .column-lab-project {
+        padding: 0.3rem;
+      }
+
+      .no-overflow {
+        overflow: hidden;
+        max-width: 100vw;
+      }
+
+      .aff {
+        margin-top: 0px !important;
+        padding-top: 0px;
+        font-size: inherit !important;
+      }
+
+      .aff .column {
+        flex-basis: 0 !important;
+      }
+      .btn-more-result {
+        margin-top: 4em;
+      }
+
+    }
+
+    /* tablet ui */
+    @media screen and (max-width: 1024px) {
+      #teaser {
+        margin-top: 0px !important;
+      }
+
+      #abstract {
+        margin-top: 0px !important;
+      }
+
+      .columns-lab-project {
+        padding-left: 1em;
+        padding-right: 1em;
+      }
+
+      .columns-compare {
+        padding-left: 1em;
+        padding-right: 1em;
+      }
+
+      html,
+      body {
+        overflow-x: hidden;
+      }
+      .btn-more-result {
+        margin-top: 4em;
+      }
+    }
+
+    .splide__pagination__page.is-active {
+      background: #555555;
+    }
+
+    .splide__pagination {
+      bottom: -2em;
+    }
+
+    @media screen and (max-width:3000px) {
+      .is-hidden-on-3000 {
+        display: none !important
+      }
+    }
+
+    @media screen and (max-width:2000px) {
+      .is-hidden-on-2000 {
+        display: none !important
+      }
+    }
+
+    @media screen and (max-width: 350px) {
+      .column.is-12-ultrasmall {
+        width: 100%;
+      }
+
+      .column.has-left-text-ultrasmall {
+        text-align: left;
+      }
+    }
+
+    #in-the-wild-desktop .column figure {
+      margin-left: 0.2em;
+      margin-right: 0.2em;
+    }
+
+    .card {
+      height: 100%;
+      /* background-color: #f5f5f5 !important; */
+      border-radius: 0.5rem;
+      box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, .06), 0 0 0 1px rgba(10, 10, 10, .02);
+      /* box-shadow: none !important; */
+      color: #4a4a4a;
+      max-width: 100%;
+      position: relative;
+    }
+
+    .aff {
+      font-weight: bold;
+      font-size: 17px;
+      margin-top: 0.5rem;
+    }
+
+    .aff .column {
+      flex-basis: content;
+    }
+
+    .fixwidth {
+      max-width: 1000px !important;
+      margin: auto;
+    }
+
+
+    .author-list-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .author-list {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.1em;
+      flex-grow: 0px;
+      flex-shrink: 0px;
+    }
+
+    .author-list li {
+      margin-bottom: 0px;
+      padding: 0px 4px;
+    }
+
+    .linebreak {
+      flex-basis: 100%;
+      height: 0;
+    }
+
+    .author_names .column {
+      padding: 0px;
+    }
+
+    #teaser {
+      margin-top: 1em;
+    }
+
+    #abstract {
+      margin-top: 2em;
+      margin-bottom: 2em;
+    }
+
+    .video-wall video {
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+
+    .fader_container img {
+      border: none;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      -webkit-transition: opacity 2s linear;
+      -moz-transition: opacity 2s linear;
+      -o-transition: opacity 2s linear;
+      transition: opacity 2s linear;
+    }
+
+    .showMe {
+      opacity: 1 !important;
+    }
+    
+    .gapless-video-frame .column{
+      display: flex;
+    }
+    .in-the-wild-result-pc .column figure{
+      margin: 0px;
+    }
+    .box-gray {
+      border: rgba(10,10,10,.1) solid 1px;
+      border-radius: 0px;
+    }
+    .splide__slide columns{
+      margin-left: 2em;
+      margin-right: 2em;
+    }
+    .splide__slide p {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+
+    }
+    .target-row{
+            background-color: #004D40;
+        }
+    
+  </style>
+</head>
+
+<body>
+    <section class="hero is-black" style="background-color: #000;">
+        <div class="hero-body has-text-centered" >
+          <img src="assets/images/logo/diffusionlight-turbo.png" style="width: 200px; height: auto; margin-left: auto; margin-right: auto; display:block;">  
+          <h1 class="title">
+              Accelerated Light Probes for Free via One-Step Chrome Ball Inpainting
+          </h1>
+          <div class="columns is-multiline is-mobile"">
+              <div class="column is-12-tablet is-8-mobile is-12-ultrasmall">
+              <div class="columns is-multiline author_names has-text-left-mobile  has-text-center-tablet "
+                style="max-width: 768px; margin-left:auto; margin-right:auto;">
+                <div class="column is-one-third-tablet has-text-left-tablet">Worameth Chinchuthakun*<sup>1,2</sup></div>
+                <div class="column is-one-third-tablet ">Pakkapon Phongthawee*<sup>1</sup></div>
+                <div class="column is-one-third-tablet has-text-right-tablet">Amit Raj<sup>3</sup></div>
+                <div class="column is-one-third-tablet has-text-left-tablet">Varun Jampani<sup>4</sup></div>
+                <div class="column is-one-third-tablet ">Pramook Khungurn<sup>5</sup></div>
+                <div class="column is-one-third-tablet has-text-right-tablet"><a href="https://www.supasorn.com/" style="color:white">Supasorn Suwajanakorn</a><sup>1</sup></div>
+              </div>
+            </div>
+            <div class="column is-12-tablet is-4-mobile is-12-ultrasmall">
+              <div class="columns is-multiline author_names aff has-text-right-mobile  has-text-center-tablet"
+                style="max-width: 768px; margin-left:auto; margin-right:auto; font-size: 1.1em;">
+                <div class="column has-left-text-ultrasmall"><sup>1 </sup>VISTEC</div>
+                <div class="column has-left-text-ultrasmall"><sup>2 </sup>SCB</div>
+                <div class="column has-left-text-ultrasmall"><sup>3 </sup>Google Research</div>
+                <div class="column has-left-text-ultrasmall"><sup>4 </sup>Stability AI</div>
+                <div class="column has-left-text-ultrasmall"><sup>5 </sup>Pixiv</div>
+              </div>
+            </div>
+            <div class="column" style="margin-bottom: -2.5em; margin-top: -0.5em; color: rgba(255, 255, 255, 0.7); font-size: 0.9em;">
+              *Equal contributions
+            </div>
+          </div>
+        </div>
+    </section>
+
+    <section style="margin-top: 2em; margin-bottom:2em;">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-6 has-text-centered">
+                    DiffusionLight
+                </div>
+                <div class="column is-6 has-text-centered">
+                    DiffusionLight-Turbo
+                </div>
+        </div>
+    </section>
+
+  <section class="no-overflow" id="teaser"
+    onclick="gtag('event', 'teaser', {'event_category' : 'link_click', 'event_label' : 'teaser'})">
+    <!--Desktop show 6 image-->
+    <!--Table show 6 image, 2 row with 3 image each -->
+    <div class="card container" style=" margin-left: auto; margin-right: auto;  ">
+        <img id="preview" style="display: none; position: absolute"></img>
+      <div class="columns is-mobile" style="margin: 0px;">
+        <div class="column" style="padding:0px;">
+          <figure class="image is-4by3">
+            <div class="fader_container">
+              <img class="showMe" src="assets/images/in-the-wild/anime_wall_ev-00_seed800.jpg">
+              <img src="assets/images/in-the-wild/korea_sakura_ev-00_seed600.jpg">
+            </div>
+          </figure>
+        </div>
+        <div class="column" style="padding:0px;">
+          <figure class="image is-4by3">
+            <div class="fader_container">
+              <img class="showMe" src="assets/images/in-the-wild/snowboarding_ev-00_seed600.jpg">
+              <img src="assets/images/in-the-wild/man_face_ev-00_seed600.jpg">
+            </div>
+
+          </figure>
+        </div>
+        <div class="column" style="padding:0px;">
+          <figure class="image is-4by3">
+            <div class="fader_container">
+            <img class="showMe" src="assets/images/in-the-wild/bed_ev-00_seed400.jpg">
+            <img src="assets/images/in-the-wild/mickey_ev-00_seed600.jpg">
+            </div>
+          </figure>
+        </div>
+      </div>
+      <div class="columns  is-mobile"
+        style="margin-top: 0px; margin-bottom: 0px; margin-left: auto; margin-right: auto;  ">
+        <div class="column" style="padding:0px;">
+          <figure class="image is-4by3">
+            <div class="fader_container">
+            <img class="showMe"src="assets/images/in-the-wild/chris-czermak-gZKzBhsO6KY-unsplash_seed800.jpg">
+            <img src="assets/images/in-the-wild/living_room_ev-00_seed400.jpg">
+            </div>
+          </figure>
+        </div>
+        <div class="column" style="padding:0px;">
+          <figure class="image is-4by3">
+            <div class="fader_container">
+            <img class="showMe" src="assets/images/in-the-wild/buddhist_ev-00_seed600.jpg">
+            <img src="assets/images/in-the-wild/patricia-barbosa-eqSRX9_0Tcs-unsplash_seed0.jpg">
+            </div>
+          </figure>
+        </div>
+        <div class="column" style="padding:0px;">
+          <figure class="image is-4by3">
+            <div class="fader_container">
+            <img class="showMe" src="assets/images/in-the-wild/roman-lopez-92XOQbvqpdU-unsplash_seed200.jpg">
+            <img src="assets/images/in-the-wild/coast_ev-00_seed200.jpg">
+            </div>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="abstract">
+    <div class="container fixwidth">
+      <div class="card">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-3">Abstract</p>
+            </div>
+          </div>
+
+          <div class="content is-size-6-desktop has-text-white">
+            We present a simple yet effective technique to estimate lighting in a single input image. 
+Existing approaches typically train models on HDR panorama datasets to predict full HDR environment maps from LDR images with limited fields of view. However, these methods often struggle to generalize to real-world scenarios due to the limited diversity and scale of available training data.
+In this paper, we reframe light estimation as a chrome ball inpainting problem and leverage diffusion models trained on billions of standard images to solve it. 
+Although conceptually simple, this approach remains challenging as diffusion models often insert incorrect or inconsistent objects. Our analysis of these failures reveals that the quality of the generated chrome ball is highly sensitive to the initial noise in the diffusion process, occasionally resulting in unrealistic outputs.
+To address this, we propose initializing the denoising process with a blurry chrome ball that provides a good lighting prior. These blurry balls can be precomputed by averaging multiple vanilla inpainting results to remove high-frequency details. We then train a Turbo LoRA model to directly generate these averaged chrome balls efficiently.
+To extend our method to HDR, we fine-tune an LDR diffusion model (Stable Diffusion XL) with an Exposure LoRA, enabling it to perform exposure bracketing for HDR light estimation.
+Experimental results show our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="no-overflow" style="margin-top:2em; margin-bottom:2em;">
+    <div class="container has-text-centered">
+      <div class="columns is-mobile is-multiline">
+        <div class="column is-hidden-mobile	is-hidden-tablet-only is-hidden-desktop-only"></div>
+        <div class="column is-6-mobile">
+          <a href="https://arxiv.org/abs/2312.09168" target="_blank"
+            onclick="gtag('event', 'download_paper', {'event_category' : 'link_click', 'event_label' : 'arxiv'})">
+            <div>
+              <img src="assets/images/logo/paper.png">
+            </div>
+            Paper
+          </a>
+        </div>
+        <div class="column is-6-mobile">
+          <a href="https://github.com/DiffusionLight/DiffusionLight-Turbo" target="_blank"
+            onclick="gtag('event', 'download_code', {'event_category' : 'link_click', 'event_label' : 'code'})">
+            <div>
+              <img src="assets/images/logo/coding.png">
+            </div>
+            Code
+          </a>
+        </div>
+        <div class="column is-6-mobile">
+          <a href="https://colab.research.google.com/drive/15pC4qb9mEtRYsW3utXkk-jnaeVxUy-0S?usp=sharing&sandboxMode=true" target="_blank"
+            onclick="gtag('event', 'colab', {'event_category' : 'link_click', 'event_label' : 'colab'})">
+            <div>
+              <img src="assets/images/logo/colab_favicon_128x.png">
+            </div>
+            Colab notebook
+          </a>
+        </div>
+        
+        <div class="column is-6-mobile">
+          <a href="https://huggingface.co/DiffusionLight/TurboLoRA" target="_blank"
+            onclick="gtag('event', 'colab', {'event_category' : 'link_click', 'event_label' : 'huggingface'})">
+            <div>
+              <img src="assets/images/logo/hf.png">
+            </div>
+            HuggingFace <br> model card
+          </a>
+        </div>
+        <div class="column is-6-mobile">
+          <a href="https://huggingface.co/DiffusionLight/TurboLoRA" target="_blank"
+            onclick="gtag('event', 'colab', {'event_category' : 'link_click', 'event_label' : 'comfy_ui'})">
+            <div>
+              <img src="assets/images/logo/comfyui.png">
+            </div>
+            ComfyUI <br> custom node
+          </a>
+        </div> 
+       
+        <div class="column is-6-mobile">
+          <a href="https://vistec-my.sharepoint.com/:f:/g/personal/pakkapon_p_s19_vistec_ac_th/EvBHbnLrVnZArhQTcboh6qkBGcSqUqzdgx13iZ2IsLPzOw?e=D9lSPq"
+            target="_blank"
+            onclick="gtag('event', 'download_score_measuring', {'event_category' : 'link_click', 'event_label' : 'score_measuring'})">
+            <div>
+              <img src="assets/images/logo/score_measuring.png">
+            </div>
+            Score measurement
+          </a>
+        </div>
+        <div class="column is-hidden-mobile	is-hidden-tablet-only is-hidden-desktop-only"></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top: 2em; margin-bottom:2em;">
+    <div class="container">
+      <div class="card" style="">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-3">Approach</p>
+            </div>
+          </div>
+
+          <div class="content has-text-white">
+            While DiffusionLight effectively leverages diffusion’s rich
+            image priors for light estimation, it requires inpainting and
+            averaging multiple chrome balls for each exposure value via
+            SDEdit. Our new method, DiffusionLight-Turbo, accelerates 
+            this iterative inpainting algorithm by using Turbo LoRA to
+            directly predict an average chrome ball that provides a reliable
+            overall lighting estimate. To further speed up inference, we propose a simple
+            yet effective LoRA swapping that applies different LoRAs at
+            specific timesteps within the same denoising process.
+            <img src="assets/images/pipeline-turbo.jpg" style="width: 100%; height: auto; margin: 2em 0;border-radius:var(--bulma-card-radius);">
+            (a) We use Stable Diffusion XL with depth-conditioned ControlNet to inpaint a chrome ball. (b) Our iterative inpainting algorithm enhances generation quality and consistency by constraining the initial noise through sample averaging. (c) We train Exposure LoRA, which produces multiple LDR chrome balls with varying exposures for HDR merging.  (d) We find a good initial noise map by denoising with Turbo LoRA until <i>t=0.8T</i> then swapping it with Exposure LoRA. (e) We train Turbo LoRA to mimic the output of iterative inpainting.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top: 2em; margin-bottom:2em;">
+    <div class="container">
+      <div class="card" style="">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-3">x60 Faster, Same Performance</p>
+            </div>
+          </div>
+
+          <div class="content has-text-white">
+            <p style="margin-bottom: 2em;">
+              DiffusionLight-Turbo produces similar quality chrome balls as DiffusionLight, but is 60 times faster. Here, we show a comparison of both methods on a wide variety of images, such as indoor scenes, outdoor scenes, and close-up images. We show our predicted chrome balls in a normally exposed version (EV0) and an underexposed version (EV-5). These input images are from <a
+                href="https://unsplash.com/" target="_blank">Unsplash.com.</a>
+            </p>
+            <!-- Desktop: display all image: 3x3-->
+            <!--
+            <div class="is-hidden-touch" id="in-the-wild-desktop">
+              <div class="columns is-gapless is-multiline is-mobile">
+                <div class="column is-one-third">
+                  <figure class="image ">
+                    <img src="assets/images/in-the-wild/desert_ev-00_seed600.jpg">
+                  </figure>
+                </div>
+                <div class="column is-one-third">
+                  <figure class="image ">
+                    <img src="assets/images/in-the-wild/3_ev-00_seed140.jpg">
+                  </figure>
+                </div>
+                <div class="column is-one-third">
+                  <figure class="image ">
+                    <img src="assets/images/in-the-wild/anpanman_ev-00_seed400.jpg">
+                  </figure>
+                </div>
+                <div class="column is-one-third">
+                  <figure class="image ">
+                    <img src="assets/images/in-the-wild/korea_sakura_ev-00_seed600.jpg">
+                  </figure>
+                </div>
+                <div class="column is-one-third">
+                  <figure class="image ">
+                    <img src="assets/images/in-the-wild/chiyoda_ev-00_seed400.jpg">
+                  </figure>
+                </div>
+                <div class="column is-one-third">
+                  <figure class="image ">
+                    <img src="assets/images/in-the-wild/bw1_ev-00_seed400.jpg">
+                  </figure>
+                </div>
+                <div class="column is-one-third">
+                  <figure class="image ">
+                    <img src="assets/images/in-the-wild/living_room_ev-00_seed400.jpg">
+                  </figure>
+                </div>
+                <div class="column is-one-third">
+                  <figure class="image ">
+                    <img src="assets/images/in-the-wild/club_ev-00_seed400.jpg">
+                  </figure>
+                </div>
+                <div class="column is-one-third">
+                  <figure class="image ">
+                    <img src="assets/images/in-the-wild/vermeer_earring_ev-00_seed140.jpg">
+                  </figure>
+                </div>
+              </div>
+            </div>
+            -->
+            <div class="columns is-mobile in-the-wild-result-pc is-multiline is-hidden-touch">
+              <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
+                <div class="card" style="margin-bottom: 0;" >
+                    <div class="card-content has-text-centered" style="padding: 12px;">
+                        <!-- Desktop -->
+                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                            <figure class="image scene-image">
+                                <img src="assets/images/in-the-wild/anpanman_seed400.jpg">
+                            </figure>
+                        </div>
+                        
+                        <div class="columns is-vcentered is-mobile is-desktop target-row">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
+                <div class="card" style="margin-bottom: 0;" >
+                    <div class="card-content has-text-centered" style="padding: 12px;">
+                        <!-- Desktop -->
+                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                            <figure class="image scene-image">
+                                <img src="assets/images/in-the-wild/backpacker_seed400.jpg">
+                            </figure>
+                        </div>
+                        
+                        <div class="columns is-vcentered is-mobile is-desktop target-row">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_backpacker_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_backpacker_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_backpacker_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_backpacker_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
+                <div class="card" style="margin-bottom: 0;" >
+                    <div class="card-content has-text-centered" style="padding: 12px;">
+                        <!-- Desktop -->
+                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                            <figure class="image scene-image">
+                                <img src="assets/images/in-the-wild/brick_apartment_seed400.jpg">
+                            </figure>
+                        </div>
+                        
+                        <div class="columns is-vcentered is-mobile is-desktop target-row">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_brick_apartment_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_brick_apartment_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_brick_apartment_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_brick_apartment_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
+                <div class="card" style="margin-bottom: 0;" >
+                    <div class="card-content has-text-centered" style="padding: 12px;">
+                        <!-- Desktop -->
+                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                            <figure class="image scene-image">
+                                <img src="assets/images/in-the-wild/yuurakuchou_seed600.jpg">
+                            </figure>
+                        </div>
+                        
+                        <div class="columns is-vcentered is-mobile is-desktop target-row">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_yuurakuchou_seed600.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_yuurakuchou_seed600.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_yuurakuchou_seed600.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_yuurakuchou_seed600.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
+                <div class="card" style="margin-bottom: 0;" >
+                    <div class="card-content has-text-centered" style="padding: 12px;">
+                        <!-- Desktop -->
+                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                            <figure class="image scene-image">
+                                <img src="assets/images/in-the-wild/chateau_seed200.jpg">
+                            </figure>
+                        </div>
+                        
+                        <div class="columns is-vcentered is-mobile is-desktop target-row">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_chateau_seed200.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_chateau_seed200.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_chateau_seed200.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_chateau_seed200.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
+                <div class="card" style="margin-bottom: 0;" >
+                    <div class="card-content has-text-centered" style="padding: 12px;">
+                        <!-- Desktop -->
+                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                            <figure class="image scene-image">
+                                <img src="assets/images/in-the-wild/hill_seed800.jpg">
+                            </figure>
+                        </div>
+                        
+                        <div class="columns is-vcentered is-mobile is-desktop target-row">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_hill_seed800.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_hill_seed800.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_hill_seed800.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_hill_seed800.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Mobile: use slide-->
+            <div class="splide is-hidden-desktop">
+              <div class="splide__track">
+                <ul class="splide__list">
+                  <li class="splide__slide">
+                    <div class="card" style="margin-bottom: 0;" >
+                    <div class="card-content has-text-centered" style="padding: 12px;">
+                        <!-- Desktop -->
+                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                            <figure class="image scene-image">
+                                <img src="assets/images/in-the-wild/anpanman_seed400.jpg">
+                            </figure>
+                        </div>
+                        
+                        <div class="columns is-vcentered is-mobile is-desktop target-row">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                            </div>
+                        </div>
+                    </div>
+                  </li>
+                  <li class="splide__slide">
+                    <div class="card" style="margin-bottom: 0;" >
+                      <div class="card-content has-text-centered" style="padding: 12px;">
+                          <!-- Desktop -->
+                          <div class="columns is-mobile has-text-centered is-vcentered ">
+                              <figure class="image scene-image">
+                                  <img src="assets/images/in-the-wild/backpacker_seed400.jpg">
+                              </figure>
+                          </div>
+                          
+                          <div class="columns is-vcentered is-mobile is-desktop target-row">
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-normal_turbo_backpacker_seed400.png">
+                                  </figure>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-dark_turbo_backpacker_seed400.png">
+                                  </figure>
+                              </div>
+                          </div>
+                          <div class="columns is-vcentered is-mobile is-desktop">
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_backpacker_seed400.png">
+                                  </figure>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_backpacker_seed400.png">
+                                  </figure>
+                              </div>
+                          </div>
+                          <div class="columns is-vcentered is-mobile is-desktop">
+                              <div class="column is-4">
+                              </div>
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  </li>
+                  <li class="splide__slide">
+                    <div class="card" style="margin-bottom: 0;" >
+                        <div class="card-content has-text-centered" style="padding: 12px;">
+                            <!-- Desktop -->
+                            <div class="columns is-mobile has-text-centered is-vcentered ">
+                                <figure class="image scene-image">
+                                    <img src="assets/images/in-the-wild/brick_apartment_seed400.jpg">
+                                </figure>
+                            </div>
+                            
+                            <div class="columns is-vcentered is-mobile is-desktop target-row">
+                                <div class="column is-4">
+                                    <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                                </div>
+                                <div class="column is-4">
+                                    <figure class="image">
+                                        <img src="assets/images/in-the-wild-ball/ball-normal_turbo_brick_apartment_seed400.png">
+                                    </figure>
+                                </div>
+                                <div class="column is-4">
+                                    <figure class="image">
+                                        <img src="assets/images/in-the-wild-ball/ball-dark_turbo_brick_apartment_seed400.png">
+                                    </figure>
+                                </div>
+                            </div>
+                            <div class="columns is-vcentered is-mobile is-desktop">
+                                <div class="column is-4">
+                                    <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                                </div>
+                                <div class="column is-4">
+                                    <figure class="image">
+                                        <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_brick_apartment_seed400.png">
+                                    </figure>
+                                </div>
+                                <div class="column is-4">
+                                    <figure class="image">
+                                        <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_brick_apartment_seed400.png">
+                                    </figure>
+                                </div>
+                            </div>
+                            <div class="columns is-vcentered is-mobile is-desktop">
+                                <div class="column is-4">
+                                </div>
+                                <div class="column is-4">
+                                    <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                                </div>
+                                <div class="column is-4">
+                                    <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </li>
+                  <li class="splide__slide">
+                    <div class="card" style="margin-bottom: 0;" >
+                      <div class="card-content has-text-centered" style="padding: 12px;">
+                          <!-- Desktop -->
+                          <div class="columns is-mobile has-text-centered is-vcentered ">
+                              <figure class="image scene-image">
+                                  <img src="assets/images/in-the-wild/yuurakuchou_seed600.jpg">
+                              </figure>
+                          </div>
+                          
+                          <div class="columns is-vcentered is-mobile is-desktop target-row">
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-normal_turbo_yuurakuchou_seed600.png">
+                                  </figure>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-dark_turbo_yuurakuchou_seed600.png">
+                                  </figure>
+                              </div>
+                          </div>
+                          <div class="columns is-vcentered is-mobile is-desktop">
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_yuurakuchou_seed600.png">
+                                  </figure>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_yuurakuchou_seed600.png">
+                                  </figure>
+                              </div>
+                          </div>
+                          <div class="columns is-vcentered is-mobile is-desktop">
+                              <div class="column is-4">
+                              </div>
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  </li>
+                  <li class="splide__slide">
+                    <div class="card" style="margin-bottom: 0;" >
+                      <div class="card-content has-text-centered" style="padding: 12px;">
+                          <!-- Desktop -->
+                          <div class="columns is-mobile has-text-centered is-vcentered ">
+                              <figure class="image scene-image">
+                                  <img src="assets/images/in-the-wild/chateau_seed200.jpg">
+                              </figure>
+                          </div>
+                          
+                          <div class="columns is-vcentered is-mobile is-desktop target-row">
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-normal_turbo_chateau_seed200.png">
+                                  </figure>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-dark_turbo_chateau_seed200.png">
+                                  </figure>
+                              </div>
+                          </div>
+                          <div class="columns is-vcentered is-mobile is-desktop">
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_chateau_seed200.png">
+                                  </figure>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_chateau_seed200.png">
+                                  </figure>
+                              </div>
+                          </div>
+                          <div class="columns is-vcentered is-mobile is-desktop">
+                              <div class="column is-4">
+                              </div>
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  </li>
+                  <li class="splide__slide">
+                    <div class="card" style="margin-bottom: 0;" >
+                      <div class="card-content has-text-centered" style="padding: 12px;">
+                          <!-- Desktop -->
+                          <div class="columns is-mobile has-text-centered is-vcentered ">
+                              <figure class="image scene-image">
+                                  <img src="assets/images/in-the-wild/hill_seed800.jpg">
+                              </figure>
+                          </div>
+                          
+                          <div class="columns is-vcentered is-mobile is-desktop target-row">
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-normal_turbo_hill_seed800.png">
+                                  </figure>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-dark_turbo_hill_seed800.png">
+                                  </figure>
+                              </div>
+                          </div>
+                          <div class="columns is-vcentered is-mobile is-desktop">
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_hill_seed800.png">
+                                  </figure>
+                              </div>
+                              <div class="column is-4">
+                                  <figure class="image">
+                                      <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_hill_seed800.png">
+                                  </figure>
+                              </div>
+                          </div>
+                          <div class="columns is-vcentered is-mobile is-desktop">
+                              <div class="column is-4">
+                              </div>
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                              </div>
+                              <div class="column is-4">
+                                  <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="has-text-centered btn-more-result">
+              <a class="button is-medium is-link is-light " href="in-the-wild.html"
+                onclick="gtag('event', 'more_result', {'event_category' : 'link_click', 'event_label' : 'more_result'})" style="font-weight: bold; font-size: 1.4em;">More results</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top: 2em; margin-bottom:2em;">
+    <div class="container">
+      <div class="card">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-3">Application: Virtual Object Insertion</p>
+            </div>
+          </div>
+
+          <div class="content has-text-white">
+            <div style="margin-bottom: 2em;">
+              Using our environmental light estimates, we can seamlessly insert 3D objects into an existing photograph. Hover over the video to stop time!
+            </div>
+            <div class="columns is-mobile has-text-centered is-vcentered" style="margin-bottom: -5px">
+              <div class="column">
+                <p class="has-text-weight-bold">
+                  Input image
+                </p>
+              </div>
+              <div class="column">
+                <p class="has-text-weight-bold">
+                  Without relighting
+                </p>
+              </div>
+              <div class="column">
+                <p class="has-text-weight-bold">
+                  Relighting with DiffusionLight-Turbo
+                </p>
+              </div>
+              <div class="column">
+                <p class="has-text-weight-bold">
+                  Relighting with DiffusionLight
+                </p>
+              </div>
+            </div>
+            <video class="video_app" poster="" playsinline autoplay muted loop preload="auto"
+              onclick="gtag('event', 'object_insertion_video', {'event_category' : 'video_click', 'event_label' : 'video_1'})">
+              <source src="assets/video/compare_indoor_blackclock.mp4" type="video/mp4">
+            </video>
+            <!--
+            <video poster="" controls playsinline autoplay muted loop preload="auto">
+              <source src="assets/video/compare_beach5.mp4" type="video/mp4">
+            </video>
+            <video poster="" controls playsinline autoplay muted loop preload="auto">
+              <source src="assets/video/compare_outdoor.mp4" type="video/mp4">
+            </video>
+            -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="container" style="margin-top:2em; margin-bottom:2em;">
+    <div style="border-bottom:1px solid lightgrey; padding-bottom:1em; margin-bottom:1em">
+      <p class="title is-3" style="padding-left:0.5em">Comparison with Prior Work</p>
+    </div>
+    <div class="columns is-desktop columns-compare">
+      <div class="column">
+        <a href="compare.html?dataset=polyhaven"
+          onclick="gtag('event', 'supp_polyhaven', {'event_category' : 'link_click', 'event_label' : 'supp_polyhaven'})">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-4by3">
+                <img src="assets/images/front-page/polyhaven_preview.jpg" alt="Poly Haven">
+              </figure>
+            </div>
+            <div class="card-content" style="padding: 24px 6px">
+              <div class="media">
+                <div class="media-left">
+                </div>
+                <div class="media-content">
+                  <p class="title dtitle"> Poly Haven</p>
+                  <p class="subtitle is-6">Rendering of 3 spheres in indoor & outdoor scenes</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="column">
+        <a href="compare.html?dataset=indoor"
+          onclick="gtag('event', 'supp_indoor', {'event_category' : 'link_click', 'event_label' : 'supp_indoor'})">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-4by3">
+                <img src="assets/images/front-page/indoor_preview.jpg" alt="Laval Indoor">
+              </figure>
+            </div>
+            <div class="card-content" style="padding: 24px 6px">
+              <div class="media">
+                <div class="media-left">
+                </div>
+                <div class="media-content">
+                  <p class="title dtitle"> Laval Indoor</p>
+                  <p class="subtitle is-6">Rendering of 3 spheres in indoor scenes</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="column">
+        <a href="compare.html?dataset=array_of_spheres"
+          onclick="gtag('event', 'supp_arrayofsphere', {'event_category' : 'link_click', 'event_label' : 'supp_arrayofsphere'})">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-4by3">
+                <img src="assets/images/front-page/everlight_preview.jpg" alt="Array of Sphere">
+              </figure>
+            </div>
+            <div class="card-content" style="padding: 24px 6px">
+              <div class="media">
+                <div class="media-left">
+                </div>
+                <div class="media-content">
+                  <p class="title dtitle"> Array of Spheres</p>
+                  <p class="subtitle is-6">Rendering of spheres on a plane in indoor scenes</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero" style="background-color: #1A237E;">
+    <div class="container has-text-white">
+      <div class="hero-body">
+        <p class="title">ComfyUI Supported!</p>
+        <p> DiffusionLight's Turbo LoRA and Exposure LoRA are now compatible with ComfyUI's Load LoRA node. We also introduce custom nodes, including Ball2Envmap, that unproject chromeballs back to an environment map and Exposure2HDR, which combines different exposure images to HDR. Visit <a href="https://github.com/DiffusionLight/DiffusionLight-ComfyUI" class="has-text-primary " target="_blank">Github/DiffusionLight-ComfyUI</a> for more information </p>
+        <a href="https://github.com/DiffusionLight/DiffusionLight-ComfyUI"  target="_blank">
+          <img src="assets/images/comfyui_pipeline_preview.jpg" style="width: 100%; height: auto; margin: 2em 0;border-radius:12px;">
+        </a>
+        <div class="has-text-centered btn-more-result">
+              <a class="button is-medium is-link is-light " href="https://github.com/DiffusionLight/DiffusionLight-ComfyUI" style="font-weight: bold; font-size: 1.4em;"><i class="iconoir-github-circle" style="padding-right: 1rem;"></i> DiffusionLight-ComfyUI</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="hero" style="padding-top:1.5em;  padding-bottom:1.5em;">
+    <div class="container" style="width: 100%;">
+      <div class="card">
+        <header class="card-header">
+          <p class="card-header-title">
+            BibTex
+          </p>
+          <a class="card-header-icon button-clipboard has-text-white" style="border:0px; background: inherit;"
+            data-clipboard-target="#bibtex-info"
+            onclick="gtag('event', 'bibtex', {'event_category' : 'link_click', 'event_label' : 'copy_btn'})">
+            <div class="button-clipboard-tooltip" style="display: none;">Copied!</div>
+            <span class="icon">
+              <i class="iconoir-copy" style="font-size: 1.4em;"></i> 
+            </span>
+          </a>
+        </header>
+        <div class="card-content" style="max-width: calc(100vw - 3rem);">
+          <pre onclick="gtag('event', 'bibtex', {'event_category' : 'link_click', 'event_label' : 'main_body'})"
+            style="background-color:inherit;padding: 0px;" id="bibtex-info">@inproceedings{Chinchuthakun2025DiffusionLightTurbo,
+  author = {Chinchuthakun, Worameth and Phongthawee, Pakkapon and Raj, Amit and Jampani, Varun and Khungurn, Pramook and Suwajanakorn, Supasorn},
+  title = {DiffusionLight: Light Probes for Free by Painting a Chrome Ball},
+  booktitle = {ArXiv},
+  year = {2025},
+}</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero" style="background-color: white; padding-bottom:1em; padding-top:1em">
+    <div style="margin: 0px; margin-top: 5px;">
+      <div class="container" style="text-align: center; vertica">
+        <a href="https://vistec.ist/vision" target="_blank"><img src="assets/images/logo/vision.png"
+            style="width: 130px; display: inline; margin: 0 100px;"
+            onclick="gtag('event', 'vll_logo', {'event_category' : 'link_click', 'event_label' : 'vll_logo'})"></a>
+        <a href="https://vistec.ac.th/" target="_blank"><img src="assets/images/logo/vistec_color.svg"
+            class="vistec-offset" style="width: 130px; display: inline; margin: 0 100px; position:relative; "
+            onclick="gtag('event', 'vistec_logo', {'event_category' : 'link_click', 'event_label' : 'vistec_logo'})"></a>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+  <script>
+    var splide = new Splide('.splide', {
+      type: 'loop',
+      perPage: 3,
+      autoplay: true,
+      breakpoints: {
+        1024: {
+          perPage: 2,
+        },
+        640: {
+          perPage: 1,
+        },
+      }
+    });
+
+    splide.mount();
+  </script>
+  <!-- Copy Bibtex -->
+  <script src="assets/scripts/clipboard.min.js"></script>
+  <script>
+    var clipboard = new ClipboardJS('.button-clipboard');
+    function setTooltip() {
+      var tooltip = document.querySelector('.button-clipboard-tooltip');
+      tooltip.style.display = 'block';
+    }
+    function hideTooltip() {
+      var tooltip = document.querySelector('.button-clipboard-tooltip');
+      tooltip.style.display = 'none';
+    }
+    clipboard.on('success', function (e) {
+      setTooltip(e.trigger, 'Copied!');
+      setTimeout(function () {
+        hideTooltip(e.trigger);
+      }, 2000);
+
+    });
+  </script>
+  <!-- Random fade teaser -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function () {
+
+      let numImages = $(".fader_container").length;
+      setTimeout(nextImage, 7000, 0);
+
+      function nextImage(fid) {
+        var fader = $(".fader_container").eq(fid);
+        var active = fader.children("img.showMe");
+        var next = active.next().length ? active.next() : fader.children("img").first();
+        active.removeClass("showMe");
+        next.addClass("showMe");
+        if (fid == numImages - 1) {
+          setTimeout(nextImage, 7000, 0);
+        } else {
+          setTimeout(nextImage, 3000, (fid + 1) % numImages);
+        }
+      }
+
+      $(".average_videos video, .video_app").mouseover(function (event) {
+        $(this).get(0).pause();
+      });
+      $(".average_videos video, .video_app").mouseout(function (event) {
+        $(this).get(0).play();
+      });
+
+      /*
+      $(".fader_container").mouseover(function (event) {
+        var src = $(this).children(".showMe").attr("src");
+        var newsrc = src;
+        $("#preview").attr("src", newsrc);
+        $("#preview").show();
+        // move preview to the same location as this
+        $("#preview").offset({
+          top: $(this).offset().top,
+          left: $(this).offset().left
+        });
+        // move preview to front most
+        $("#preview").css("z-index", 1000);
+      });
+      $(".fader_container").mouseout(function (event) {
+        $("#preview").hide();
+      });
+      */
+
+    });
+
+  </script>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9BBTLD1V4J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-9BBTLD1V4J');
+  </script>
+
+</body>
+
+</html>
