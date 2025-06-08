@@ -4,11 +4,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DiffusionLight: Light Probes for Free by Painting a Chrome Ball</title>
+  <title>DiffusionLight-Turbo: Accelerated Light Probes for Free via One-Step Chrome Ball Inpainting</title>
   <link rel="icon" href="assets/images/icon_32x32.png" type="image/png" sizes="32x32">
   <meta property="og:url" content="https://diffusionlight.github.io/" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="DiffusionLight: Light Probes for Free by Painting a Chrome Ball" />
+  <meta property="og:title" content="DiffusionLight-Turbo: Accelerated Light Probes for Free via One-Step Chrome Ball Inpainting" />
   <meta property="og:description"
     content="We present a simple yet effective technique to estimate lighting in a single input image. Our research uncovers a surprising relationship between the appearance of chrome balls and the initial diffusion noise map, which we utilize to consistently generate high-quality chrome balls. We further fine-tune an LDR diffusion model (Stable Diffusion XL) with LoRA, enabling it to perform exposure bracketing for HDR light estimation. Our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios." />
   <meta property="og:image" content="https://diffusionlight.github.io/assets/images/in-the-wild/bed_ev-00_seed400.jpg" />
@@ -283,80 +283,164 @@
         </div>
     </section>
 
-    <section style="margin-top: 2em; margin-bottom:2em;">
+    <section style="margin-top: 2em; margin-bottom:4em;">
         <div class="container">
-            <div class="columns">
+            <div class="columns is-vcentered is-mobile is-centered">
                 <div class="column is-6 has-text-centered">
-                    DiffusionLight
+                    <div class="is-size-4 has-text-weight-bold has-text-white">
+                      DiffusionLight-Turbo <br>
+                      <span class="has-text-success">(30 seconds) </span>
+                    </div>
                 </div>
                 <div class="column is-6 has-text-centered">
-                    DiffusionLight-Turbo
+                  
+                    <div class="is-size-4 has-text-weight-bold has-text-white">
+                      DiffusionLight <br>
+                      <span class="has-text-danger">(30 minutes)</span>
+                    </div>
                 </div>
-        </div>
+            </div>
+            <div class="columns is-mobile">
+              <div class="column is-12">
+                  <div id="splide-teaser" class="splide">
+                    <div class="splide__track">
+                      <ul class="splide__list">
+                        <li class="splide__slide">
+                          <div class="columns is-mobile is-vcentered">
+                              <div class="column is-6 has-text-centered ">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild\coast_seed200.jpg" >
+                                  </figure>
+                              </div>
+                              <div class="column is-6 has-text-centered is-mobile">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild-diffusionlight-30min\coast_seed200.jpg" >
+                                  </figure>                    
+                              </div>
+                          </div>
+                        </li>
+                        
+                        <li class="splide__slide">
+                          <div class="columns is-mobile is-vcentered">
+                              <div class="column is-6 has-text-centered ">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild\yuurakuchou_seed600.jpg" >
+                                  </figure>
+                              </div>
+                              <div class="column is-6 has-text-centered is-mobile">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild-diffusionlight-30min\yuurakuchou_seed600.jpg" >
+                                  </figure>                    
+                              </div>
+                          </div>
+                        </li>
+
+                        <li class="splide__slide">
+                          <div class="columns is-mobile is-vcentered">
+                              <div class="column is-6 has-text-centered ">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild\snowboarding_seed600.jpg" >
+                                  </figure>
+                              </div>
+                              <div class="column is-6 has-text-centered is-mobile">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild-diffusionlight-30min\snowboarding_seed600.jpg" >
+                                  </figure>                    
+                              </div>
+                          </div>
+                        </li>
+                        <li class="splide__slide">
+                          <div class="columns is-mobile is-vcentered">
+                              <div class="column is-6 has-text-centered ">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild\bed_seed400.jpg" >
+                                  </figure>
+                              </div>
+                              <div class="column is-6 has-text-centered is-mobile">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild-diffusionlight-30min\bed_seed400.jpg" >
+                                  </figure>                    
+                              </div>
+                          </div>
+                        </li>
+                        <li class="splide__slide">
+                          <div class="columns is-mobile is-vcentered">
+                              <div class="column is-6 has-text-centered ">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild\living_room_seed200.jpg" >
+                                  </figure>
+                              </div>
+                              <div class="column is-6 has-text-centered is-mobile">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild-diffusionlight-30min\living_room_seed200.jpg" >
+                                  </figure>                    
+                              </div>
+                          </div>
+                        </li>
+                        <li class="splide__slide">
+                          <div class="columns is-mobile is-vcentered">
+                              <div class="column is-6 has-text-centered ">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild\korea_sakura_seed600.jpg" >
+                                  </figure>
+                              </div>
+                              <div class="column is-6 has-text-centered is-mobile">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild-diffusionlight-30min\korea_sakura_seed600.jpg" >
+                                  </figure>                    
+                              </div>
+                          </div>
+                        </li>
+                        <li class="splide__slide">
+                          <div class="columns is-mobile is-vcentered">
+                              <div class="column is-6 has-text-centered ">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild\kitchen_seed800.jpg" >
+                                  </figure>
+                              </div>
+                              <div class="column is-6 has-text-centered is-mobile">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild-diffusionlight-30min\kitchen_seed800.jpg" >
+                                  </figure>                    
+                              </div>
+                          </div>
+                        </li>
+                        <li class="splide__slide">
+                          <div class="columns is-mobile is-vcentered">
+                              <div class="column is-6 has-text-centered ">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild\buddhist_seed600.jpg" >
+                                  </figure>
+                              </div>
+                              <div class="column is-6 has-text-centered is-mobile">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild-diffusionlight-30min\buddhist_seed600.jpg" >
+                                  </figure>                    
+                              </div>
+                          </div>
+                        </li>
+                        <li class="splide__slide">
+                          <div class="columns is-mobile is-vcentered">
+                              <div class="column is-6 has-text-centered ">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild\anime_wall_seed800.jpg" >
+                                  </figure>
+                              </div>
+                              <div class="column is-6 has-text-centered is-mobile">
+                                  <figure class="image ">
+                                      <img src="assets\images\in-the-wild-diffusionlight-30min\anime_wall_seed800.jpg" >
+                                  </figure>                    
+                              </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                </div>
+              </div>
+            </div>
     </section>
 
-  <section class="no-overflow" id="teaser"
-    onclick="gtag('event', 'teaser', {'event_category' : 'link_click', 'event_label' : 'teaser'})">
-    <!--Desktop show 6 image-->
-    <!--Table show 6 image, 2 row with 3 image each -->
-    <div class="card container" style=" margin-left: auto; margin-right: auto;  ">
-        <img id="preview" style="display: none; position: absolute"></img>
-      <div class="columns is-mobile" style="margin: 0px;">
-        <div class="column" style="padding:0px;">
-          <figure class="image is-4by3">
-            <div class="fader_container">
-              <img class="showMe" src="assets/images/in-the-wild/anime_wall_ev-00_seed800.jpg">
-              <img src="assets/images/in-the-wild/korea_sakura_ev-00_seed600.jpg">
-            </div>
-          </figure>
-        </div>
-        <div class="column" style="padding:0px;">
-          <figure class="image is-4by3">
-            <div class="fader_container">
-              <img class="showMe" src="assets/images/in-the-wild/snowboarding_ev-00_seed600.jpg">
-              <img src="assets/images/in-the-wild/man_face_ev-00_seed600.jpg">
-            </div>
-
-          </figure>
-        </div>
-        <div class="column" style="padding:0px;">
-          <figure class="image is-4by3">
-            <div class="fader_container">
-            <img class="showMe" src="assets/images/in-the-wild/bed_ev-00_seed400.jpg">
-            <img src="assets/images/in-the-wild/mickey_ev-00_seed600.jpg">
-            </div>
-          </figure>
-        </div>
-      </div>
-      <div class="columns  is-mobile"
-        style="margin-top: 0px; margin-bottom: 0px; margin-left: auto; margin-right: auto;  ">
-        <div class="column" style="padding:0px;">
-          <figure class="image is-4by3">
-            <div class="fader_container">
-            <img class="showMe"src="assets/images/in-the-wild/chris-czermak-gZKzBhsO6KY-unsplash_seed800.jpg">
-            <img src="assets/images/in-the-wild/living_room_ev-00_seed400.jpg">
-            </div>
-          </figure>
-        </div>
-        <div class="column" style="padding:0px;">
-          <figure class="image is-4by3">
-            <div class="fader_container">
-            <img class="showMe" src="assets/images/in-the-wild/buddhist_ev-00_seed600.jpg">
-            <img src="assets/images/in-the-wild/patricia-barbosa-eqSRX9_0Tcs-unsplash_seed0.jpg">
-            </div>
-          </figure>
-        </div>
-        <div class="column" style="padding:0px;">
-          <figure class="image is-4by3">
-            <div class="fader_container">
-            <img class="showMe" src="assets/images/in-the-wild/roman-lopez-92XOQbvqpdU-unsplash_seed200.jpg">
-            <img src="assets/images/in-the-wild/coast_ev-00_seed200.jpg">
-            </div>
-          </figure>
-        </div>
-      </div>
-    </div>
-  </section>
+  
 
   <section id="abstract">
     <div class="container fixwidth">
@@ -544,59 +628,6 @@ Experimental results show our method produces convincing light estimates across 
             </div>
             -->
             <div class="columns is-mobile in-the-wild-result-pc is-multiline is-hidden-touch">
-              <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
-                <div class="card" style="margin-bottom: 0;" >
-                    <div class="card-content has-text-centered" style="padding: 12px;">
-                        <!-- Desktop -->
-                        <div class="columns is-mobile has-text-centered is-vcentered ">
-                            <figure class="image scene-image">
-                                <img src="assets/images/in-the-wild/anpanman_seed400.jpg">
-                            </figure>
-                        </div>
-                        
-                        <div class="columns is-vcentered is-mobile is-desktop target-row">
-                            <div class="column is-4">
-                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
-                            </div>
-                            <div class="column is-4">
-                                <figure class="image">
-                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_anpanman_seed400.png">
-                                </figure>
-                            </div>
-                            <div class="column is-4">
-                                <figure class="image">
-                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_anpanman_seed400.png">
-                                </figure>
-                            </div>
-                        </div>
-                        <div class="columns is-vcentered is-mobile is-desktop">
-                            <div class="column is-4">
-                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
-                            </div>
-                            <div class="column is-4">
-                                <figure class="image">
-                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_anpanman_seed400.png">
-                                </figure>
-                            </div>
-                            <div class="column is-4">
-                                <figure class="image">
-                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_anpanman_seed400.png">
-                                </figure>
-                            </div>
-                        </div>
-                        <div class="columns is-vcentered is-mobile is-desktop">
-                            <div class="column is-4">
-                            </div>
-                            <div class="column is-4">
-                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
-                            </div>
-                            <div class="column is-4">
-                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-              </div>
               <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
                 <div class="card" style="margin-bottom: 0;" >
                     <div class="card-content has-text-centered" style="padding: 12px;">
@@ -815,6 +846,59 @@ Experimental results show our method produces convincing light estimates across 
                         <!-- Desktop -->
                         <div class="columns is-mobile has-text-centered is-vcentered ">
                             <figure class="image scene-image">
+                                <img src="assets/images/in-the-wild/anpanman_seed400.jpg">
+                            </figure>
+                        </div>
+                        
+                        <div class="columns is-vcentered is-mobile is-desktop target-row">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
+                <div class="card" style="margin-bottom: 0;" >
+                    <div class="card-content has-text-centered" style="padding: 12px;">
+                        <!-- Desktop -->
+                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                            <figure class="image scene-image">
                                 <img src="assets/images/in-the-wild/hill_seed800.jpg">
                             </figure>
                         </div>
@@ -865,61 +949,9 @@ Experimental results show our method produces convincing light estimates across 
             </div>
             
             <!-- Mobile: use slide-->
-            <div class="splide is-hidden-desktop">
+            <div id="splide-in-the-wild" class="splide is-hidden-desktop">
               <div class="splide__track">
                 <ul class="splide__list">
-                  <li class="splide__slide">
-                    <div class="card" style="margin-bottom: 0;" >
-                    <div class="card-content has-text-centered" style="padding: 12px;">
-                        <!-- Desktop -->
-                        <div class="columns is-mobile has-text-centered is-vcentered ">
-                            <figure class="image scene-image">
-                                <img src="assets/images/in-the-wild/anpanman_seed400.jpg">
-                            </figure>
-                        </div>
-                        
-                        <div class="columns is-vcentered is-mobile is-desktop target-row">
-                            <div class="column is-4">
-                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
-                            </div>
-                            <div class="column is-4">
-                                <figure class="image">
-                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_anpanman_seed400.png">
-                                </figure>
-                            </div>
-                            <div class="column is-4">
-                                <figure class="image">
-                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_anpanman_seed400.png">
-                                </figure>
-                            </div>
-                        </div>
-                        <div class="columns is-vcentered is-mobile is-desktop">
-                            <div class="column is-4">
-                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
-                            </div>
-                            <div class="column is-4">
-                                <figure class="image">
-                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_anpanman_seed400.png">
-                                </figure>
-                            </div>
-                            <div class="column is-4">
-                                <figure class="image">
-                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_anpanman_seed400.png">
-                                </figure>
-                            </div>
-                        </div>
-                        <div class="columns is-vcentered is-mobile is-desktop">
-                            <div class="column is-4">
-                            </div>
-                            <div class="column is-4">
-                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
-                            </div>
-                            <div class="column is-4">
-                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
-                            </div>
-                        </div>
-                    </div>
-                  </li>
                   <li class="splide__slide">
                     <div class="card" style="margin-bottom: 0;" >
                       <div class="card-content has-text-centered" style="padding: 12px;">
@@ -1131,6 +1163,57 @@ Experimental results show our method produces convincing light estimates across 
                           </div>
                       </div>
                   </div>
+                  </li>
+                  <li class="splide__slide">
+                    <div class="card" style="margin-bottom: 0;" >
+                    <div class="card-content has-text-centered" style="padding: 12px;">
+                        <div class="columns is-mobile has-text-centered is-vcentered ">
+                            <figure class="image scene-image">
+                                <img src="assets/images/in-the-wild/anpanman_seed400.jpg">
+                            </figure>
+                        </div>
+                        
+                        <div class="columns is-vcentered is-mobile is-desktop target-row">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light-&#8203;Turbo</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_turbo_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_turbo_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Diffusion&#8203;Light</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-normal_diffusionlight_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                            <div class="column is-4">
+                                <figure class="image">
+                                    <img src="assets/images/in-the-wild-ball/ball-dark_diffusionlight_anpanman_seed400.png">
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="columns is-vcentered is-mobile is-desktop">
+                            <div class="column is-4">
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Normally exposed</span></p>
+                            </div>
+                            <div class="column is-4">
+                                <p class="has-text-white has-text-weight-bold">Under&#8203;exposed</span></p>
+                            </div>
+                        </div>
+                    </div>
                   </li>
                   <li class="splide__slide">
                     <div class="card" style="margin-bottom: 0;" >
@@ -1363,7 +1446,7 @@ Experimental results show our method produces convincing light estimates across 
           <pre onclick="gtag('event', 'bibtex', {'event_category' : 'link_click', 'event_label' : 'main_body'})"
             style="background-color:inherit;padding: 0px;" id="bibtex-info">@inproceedings{Chinchuthakun2025DiffusionLightTurbo,
   author = {Chinchuthakun, Worameth and Phongthawee, Pakkapon and Raj, Amit and Jampani, Varun and Khungurn, Pramook and Suwajanakorn, Supasorn},
-  title = {DiffusionLight: Light Probes for Free by Painting a Chrome Ball},
+  title = {DiffusionLight-Turbo: Accelerated Light Probes for Free via One-Step Chrome Ball Inpainting},
   booktitle = {ArXiv},
   year = {2025},
 }</pre>
@@ -1387,7 +1470,7 @@ Experimental results show our method produces convincing light estimates across 
 
   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
   <script>
-    var splide = new Splide('.splide', {
+    var splide = new Splide('#splide-in-the-wild', {
       type: 'loop',
       perPage: 3,
       autoplay: true,
@@ -1400,8 +1483,13 @@ Experimental results show our method produces convincing light estimates across 
         },
       }
     });
-
     splide.mount();
+    var splide_teaser = new Splide('#splide-teaser', {
+      type: 'loop',
+      perPage: 1,
+      autoplay: true,          
+    });
+    splide_teaser.mount();
   </script>
   <!-- Copy Bibtex -->
   <script src="assets/scripts/clipboard.min.js"></script>
