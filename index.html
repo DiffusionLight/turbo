@@ -4,11 +4,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DiffusionLight-Turbo: Accelerated Light Probes for Free via One-Step Chrome Ball Inpainting</title>
+  <title>DiffusionLight-Turbo: Accelerated Light Probes for Free via Single-Pass Chrome Ball Inpainting</title>
   <link rel="icon" href="assets/images/icon_32x32.png" type="image/png" sizes="32x32">
   <meta property="og:url" content="https://diffusionlight.github.io/" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="DiffusionLight-Turbo: Accelerated Light Probes for Free via One-Step Chrome Ball Inpainting" />
+  <meta property="og:title" content="DiffusionLight-Turbo: Accelerated Light Probes for Free via Single-Pass Chrome Ball Inpainting" />
   <meta property="og:description"
     content="We present a simple yet effective technique to estimate lighting in a single input image. Our research uncovers a surprising relationship between the appearance of chrome balls and the initial diffusion noise map, which we utilize to consistently generate high-quality chrome balls. We further fine-tune an LDR diffusion model (Stable Diffusion XL) with LoRA, enabling it to perform exposure bracketing for HDR light estimation. Our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios." />
   <meta property="og:image" content="https://diffusionlight.github.io/assets/images/in-the-wild/bed_ev-00_seed400.jpg" />
@@ -250,9 +250,9 @@
 <body>
     <section class="hero is-black" style="background-color: #000;">
         <div class="hero-body has-text-centered" >
-          <img src="assets/images/logo/diffusionlight-turbo.png" style="width: 200px; height: auto; margin-left: auto; margin-right: auto; display:block;">  
+          <img src="assets/images/logo/diffusionlight-turbo.png" style="max-width: 320px; height: auto; margin-left: auto; margin-right: auto; display:block;">  
           <h1 class="title">
-              Accelerated Light Probes for Free via One-Step Chrome Ball Inpainting
+              Accelerated Light Probes for Free via Single-Pass Chrome Ball Inpainting
           </h1>
           <div class="columns is-multiline is-mobile"">
               <div class="column is-12-tablet is-8-mobile is-12-ultrasmall">
@@ -1446,7 +1446,7 @@ Experimental results show our method produces convincing light estimates across 
           <pre onclick="gtag('event', 'bibtex', {'event_category' : 'link_click', 'event_label' : 'main_body'})"
             style="background-color:inherit;padding: 0px;" id="bibtex-info">@inproceedings{Chinchuthakun2025DiffusionLightTurbo,
   author = {Chinchuthakun, Worameth and Phongthawee, Pakkapon and Raj, Amit and Jampani, Varun and Khungurn, Pramook and Suwajanakorn, Supasorn},
-  title = {DiffusionLight-Turbo: Accelerated Light Probes for Free via One-Step Chrome Ball Inpainting},
+  title = {DiffusionLight-Turbo: Accelerated Light Probes for Free via Single-Pass Chrome Ball Inpainting},
   booktitle = {ArXiv},
   year = {2025},
 }</pre>
