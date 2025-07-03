@@ -1247,40 +1247,75 @@
             <div style="margin-bottom: 2em;">
               Using our environmental light estimates, we can seamlessly insert 3D objects into an existing photograph. Hover over the video to stop time!
             </div>
-            <div class="columns is-mobile has-text-centered is-vcentered" style="margin-bottom: -5px">
-              <div class="column">
-                <p class="has-text-weight-bold">
-                  Input image
-                </p>
+            <div class="is-hidden-touch">
+              <div class="columns is-mobile has-text-centered is-vcentered" style="margin-bottom: -5px">
+                <div class="column">
+                  <p class="has-text-weight-bold">
+                    Input image
+                  </p>
+                </div>
+                <div class="column">
+                  <p class="has-text-weight-bold">
+                    Without relighting
+                  </p>
+                </div>
+                <div class="column">
+                  <p class="has-text-weight-bold">
+                    Relighting with DiffusionLight-Turbo
+                  </p>
+                </div>
+                <div class="column">
+                  <p class="has-text-weight-bold">
+                    Relighting with DiffusionLight
+                  </p>
+                </div>
               </div>
-              <div class="column">
-                <p class="has-text-weight-bold">
-                  Without relighting
-                </p>
-              </div>
-              <div class="column">
-                <p class="has-text-weight-bold">
-                  Relighting with DiffusionLight-Turbo
-                </p>
-              </div>
-              <div class="column">
-                <p class="has-text-weight-bold">
-                  Relighting with DiffusionLight
-                </p>
+              <div>
+                <video style="display: inline-block;" class="video_app" poster="" playsinline autoplay muted loop preload="auto"
+                  onclick="gtag('event', 'object_insertion_video', {'event_category' : 'video_click', 'event_label' : 'video_left_turbo'})">
+                  <source src="assets/video/compare_indoor_blackclock_v2.mp4" type="video/mp4">
+                </video>
               </div>
             </div>
-            <video class="video_app" poster="" playsinline autoplay muted loop preload="auto"
-              onclick="gtag('event', 'object_insertion_video', {'event_category' : 'video_click', 'event_label' : 'video_1_turbo'})">
-              <source src="assets/video/compare_indoor_blackclock.mp4" type="video/mp4">
-            </video>
-            <!--
-            <video poster="" controls playsinline autoplay muted loop preload="auto">
-              <source src="assets/video/compare_beach5.mp4" type="video/mp4">
-            </video>
-            <video poster="" controls playsinline autoplay muted loop preload="auto">
-              <source src="assets/video/compare_outdoor.mp4" type="video/mp4">
-            </video>
-            -->
+            <div class="is-hidden-desktop">
+              <div class="columns is-mobile has-text-centered is-vcentered" style="margin-bottom: -5px">
+                <div class="column">
+                  <p class="has-text-weight-bold">
+                    Relighting with DiffusionLight-Turbo
+                  </p>
+                </div>
+                <div class="column">
+                  <p class="has-text-weight-bold">
+                    Relighting with DiffusionLight
+                  </p>
+                </div>
+              </div>
+              <div style="margin-bottom: 0.5rem;">
+                <video style="display: inline-block;" class="video_app" poster="" playsinline autoplay muted loop preload="auto"
+                  onclick="gtag('event', 'object_insertion_video', {'event_category' : 'video_click', 'event_label' : 'video_right_turbo'})">
+                  <source src="assets/video/compare_indoor_blackclock_v2_right.mp4" type="video/mp4">
+                </video>
+              </div>
+
+              <div class="columns is-mobile has-text-centered is-vcentered" style="margin-bottom: -5px">
+                <div class="column">
+                  <p class="has-text-weight-bold">
+                    Input image
+                  </p>
+                </div>
+                <div class="column">
+                  <p class="has-text-weight-bold">
+                    Without relighting
+                  </p>
+                </div>
+              </div>
+              <div>
+                <video style="display: inline-block;" class="video_app" poster="" playsinline autoplay muted loop preload="auto"
+                  onclick="gtag('event', 'object_insertion_video', {'event_category' : 'video_click', 'event_label' : 'video_left_turbo'})">
+                  <source src="assets/video/compare_indoor_blackclock_v2_left.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1484,11 +1519,48 @@
         }
       }
 
-      $(".average_videos video, .video_app").mouseover(function (event) {
-        $(this).get(0).pause();
+      // $(".video_app").mouseover(function (event) {
+      //   $(this).get(0).pause();
+      // });
+      // $(".video_app").mouseout(function (event) {
+      //   $(this).get(0).play();
+      // });
+
+      const videos = $(".video_app");
+      let readyCount = 0;
+
+      // Ensure all videos are muted for autoplay
+      videos.each(function () {
+        this.muted = true;
       });
-      $(".average_videos video, .video_app").mouseout(function (event) {
-        $(this).get(0).play();
+
+      // When all videos can play through, start them together
+      videos.on("canplaythrough", function () {
+        readyCount++;
+        if (readyCount === videos.length) {
+          videos.each(function () {
+            this.currentTime = 0;
+          });
+
+          // Play all together using Promise.all to sync as closely as possible
+          Promise.all(videos.map(function () {
+            return this.play();
+          }).get()).catch(console.error);
+        }
+      });
+
+      // Pause on hover
+      $(".video_app").on("mouseover", function () {
+        $(".video_app").each(function () {
+          this.pause();
+        });
+      });
+
+      // Resume on mouse out
+      $(".video_app").on("mouseout", function () {
+        $(".video_app").each(function () {
+          this.play();
+        });
       });
 
 
