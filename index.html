@@ -453,13 +453,17 @@
           </div>
 
           <div class="content is-size-6-desktop has-text-white">
-            We present a simple yet effective technique to estimate lighting in a single input image. 
-Existing approaches typically train models on HDR panorama datasets to predict full HDR environment maps from LDR images with limited fields of view. However, these methods often struggle to generalize to real-world scenarios due to the limited diversity and scale of available training data.
-In this paper, we reframe light estimation as a chrome ball inpainting problem and leverage diffusion models trained on billions of standard images to solve it. 
-Although conceptually simple, this approach remains challenging as diffusion models often insert incorrect or inconsistent objects. Our analysis of these failures reveals that the quality of the generated chrome ball is highly sensitive to the initial noise in the diffusion process, occasionally resulting in unrealistic outputs.
-To address this, we propose initializing the denoising process with a blurry chrome ball that provides a good lighting prior. These blurry balls can be precomputed by averaging multiple vanilla inpainting results to remove high-frequency details. We then train a Turbo LoRA model to directly generate these averaged chrome balls efficiently.
-To extend our method to HDR, we fine-tune an LDR diffusion model (Stable Diffusion XL) with an Exposure LoRA, enabling it to perform exposure bracketing for HDR light estimation.
-Experimental results show our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios.
+            We introduce a simple yet effective technique for estimating lighting from a single low-dynamic-range (LDR) image by reframing the task as a chrome ball inpainting problem.
+            This approach leverages a pre-trained diffusion model, Stable Diffusion XL, to overcome the generalization failures of existing methods that rely on limited HDR panorama datasets.
+            While conceptually simple, the task remains challenging because diffusion models often insert incorrect or inconsistent content and cannot readily generate chrome balls in HDR format.
+            Our analysis reveals that the inpainting process is highly sensitive to the initial noise in the diffusion process, occasionally resulting in unrealistic outputs.
+            To address this, we first introduce DiffusionLight, which uses iterative inpainting to compute a median chrome ball from multiple outputs to serve as a stable, low-frequency lighting prior that guides the generation of a high-quality final result.
+            To generate high-dynamic-range (HDR) light probes, an Exposure LoRA is fine-tuned to create LDR images at multiple exposure values, which are then merged.
+            While effective, DiffusionLight is time-intensive, requiring approximately 30 minutes per estimation.
+            To reduce this overhead, we introduce DiffusionLight-Turbo, which reduces the runtime to about 30 seconds with minimal quality loss.
+            This 60x speedup is achieved by training a Turbo LoRA to directly predict the averaged chrome balls from the iterative process.
+            Inference is further streamlined into a single denoising pass using a LoRA swapping technique.
+            Experimental results that show our method produces convincing light estimates across diverse settings and demonstrates superior generalization to in-the-wild scenarios.
           </div>
         </div>
       </div>
