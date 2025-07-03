@@ -471,17 +471,17 @@ Experimental results show our method produces convincing light estimates across 
       <div class="columns is-mobile is-multiline">
         <div class="column is-hidden-mobile	is-hidden-tablet-only is-hidden-desktop-only"></div>
         <div class="column is-6-mobile">
-          <span
-            onclick="gtag('event', 'download_paper', {'event_category' : 'link_click', 'event_label' : 'arxiv'})">
+          <a href="https://arxiv.org/abs/2507.01305" target="_blank"
+            onclick="gtag('event', 'download_paper', {'event_category' : 'link_click', 'event_label' : 'arxiv_turbo'})">
             <div>
               <img src="assets/images/logo/paper.png">
             </div>
-            Paper (Waiting for ArXiv upload)
+            Paper 
           </span>
         </div>
         <div class="column is-6-mobile">
           <a href="https://github.com/DiffusionLight/DiffusionLight-Turbo" target="_blank"
-            onclick="gtag('event', 'download_code', {'event_category' : 'link_click', 'event_label' : 'code'})">
+            onclick="gtag('event', 'download_code', {'event_category' : 'link_click', 'event_label' : 'code_turbo'})">
             <div>
               <img src="assets/images/logo/coding.png">
             </div>
@@ -490,7 +490,7 @@ Experimental results show our method produces convincing light estimates across 
         </div>
         <div class="column is-6-mobile">
           <a href="https://colab.research.google.com/drive/1UcSp9mj77ZXAyTCvkcXVvC3DYznEyLwZ?usp=sharing&sandboxMode=true#scrollTo=k2pTDk79bMQI&forceEdit=true&sandboxMode=true" target="_blank"
-            onclick="gtag('event', 'colab', {'event_category' : 'link_click', 'event_label' : 'colab'})">
+            onclick="gtag('event', 'colab', {'event_category' : 'link_click', 'event_label' : 'colab_turbo'})">
             <div>
               <img src="assets/images/logo/colab_favicon_128x.png">
             </div>
@@ -500,7 +500,7 @@ Experimental results show our method produces convincing light estimates across 
         
         <div class="column is-6-mobile">
           <a href="https://huggingface.co/DiffusionLight/TurboLoRA" target="_blank"
-            onclick="gtag('event', 'colab', {'event_category' : 'link_click', 'event_label' : 'huggingface'})">
+            onclick="gtag('event', 'colab', {'event_category' : 'link_click', 'event_label' : 'huggingface_turbo'})">
             <div>
               <img src="assets/images/logo/hf.png">
             </div>
@@ -509,7 +509,7 @@ Experimental results show our method produces convincing light estimates across 
         </div>
         <div class="column is-6-mobile">
           <a href="https://github.com/DiffusionLight/DiffusionLight-ComfyUI" target="_blank"
-            onclick="gtag('event', 'colab', {'event_category' : 'link_click', 'event_label' : 'comfy_ui'})">
+            onclick="gtag('event', 'comfy_ui', {'event_category' : 'link_click', 'event_label' : 'comfy_ui_turbo_icon'})">
             <div>
               <img src="assets/images/logo/comfyui.png">
             </div>
@@ -573,60 +573,8 @@ Experimental results show our method produces convincing light estimates across 
           <div class="content has-text-white">
             <p style="margin-bottom: 2em;">
               DiffusionLight-Turbo produces similar quality chrome balls as DiffusionLight, but is 60 times faster. Here, we show a comparison of both methods on a wide variety of images, such as indoor scenes, outdoor scenes, and close-up images. We show our predicted chrome balls in a normally exposed version (EV0) and an underexposed version (EV-5). These input images are from <a
-                href="https://unsplash.com/" target="_blank">Unsplash.com.</a>
+                href="https://unsplash.com/" target="_blank" onclick="gtag('event', 'external_link', {'event_category' : 'link_click', 'event_label' : 'unsplash'})">Unsplash.com.</a>
             </p>
-            <!-- Desktop: display all image: 3x3-->
-            <!--
-            <div class="is-hidden-touch" id="in-the-wild-desktop">
-              <div class="columns is-gapless is-multiline is-mobile">
-                <div class="column is-one-third">
-                  <figure class="image ">
-                    <img src="assets/images/in-the-wild/desert_ev-00_seed600.jpg">
-                  </figure>
-                </div>
-                <div class="column is-one-third">
-                  <figure class="image ">
-                    <img src="assets/images/in-the-wild/3_ev-00_seed140.jpg">
-                  </figure>
-                </div>
-                <div class="column is-one-third">
-                  <figure class="image ">
-                    <img src="assets/images/in-the-wild/anpanman_ev-00_seed400.jpg">
-                  </figure>
-                </div>
-                <div class="column is-one-third">
-                  <figure class="image ">
-                    <img src="assets/images/in-the-wild/korea_sakura_ev-00_seed600.jpg">
-                  </figure>
-                </div>
-                <div class="column is-one-third">
-                  <figure class="image ">
-                    <img src="assets/images/in-the-wild/chiyoda_ev-00_seed400.jpg">
-                  </figure>
-                </div>
-                <div class="column is-one-third">
-                  <figure class="image ">
-                    <img src="assets/images/in-the-wild/bw1_ev-00_seed400.jpg">
-                  </figure>
-                </div>
-                <div class="column is-one-third">
-                  <figure class="image ">
-                    <img src="assets/images/in-the-wild/living_room_ev-00_seed400.jpg">
-                  </figure>
-                </div>
-                <div class="column is-one-third">
-                  <figure class="image ">
-                    <img src="assets/images/in-the-wild/club_ev-00_seed400.jpg">
-                  </figure>
-                </div>
-                <div class="column is-one-third">
-                  <figure class="image ">
-                    <img src="assets/images/in-the-wild/vermeer_earring_ev-00_seed140.jpg">
-                  </figure>
-                </div>
-              </div>
-            </div>
-            -->
             <div class="columns is-mobile in-the-wild-result-pc is-multiline is-hidden-touch">
               <div class="column is-one-third-desktop is-half-tablet" style="padding: 5px;">
                 <div class="card" style="margin-bottom: 0;" >
@@ -1273,7 +1221,7 @@ Experimental results show our method produces convincing light estimates across 
             </div>
             <div class="has-text-centered btn-more-result">
               <a class="button is-medium is-link is-light " href="in-the-wild.html"
-                onclick="gtag('event', 'more_result', {'event_category' : 'link_click', 'event_label' : 'more_result'})" style="font-weight: bold; font-size: 1.4em;">More results</a>
+                onclick="gtag('event', 'more_result', {'event_category' : 'link_click', 'event_label' : 'more_result_turbo'})" style="font-weight: bold; font-size: 1.4em;">More results</a>
             </div>
           </div>
         </div>
@@ -1318,7 +1266,7 @@ Experimental results show our method produces convincing light estimates across 
               </div>
             </div>
             <video class="video_app" poster="" playsinline autoplay muted loop preload="auto"
-              onclick="gtag('event', 'object_insertion_video', {'event_category' : 'video_click', 'event_label' : 'video_1'})">
+              onclick="gtag('event', 'object_insertion_video', {'event_category' : 'video_click', 'event_label' : 'video_1_turbo'})">
               <source src="assets/video/compare_indoor_blackclock.mp4" type="video/mp4">
             </video>
             <!--
@@ -1343,7 +1291,7 @@ Experimental results show our method produces convincing light estimates across 
     <div class="columns is-desktop columns-compare">
       <div class="column">
         <a href="compare.html?dataset=polyhaven"
-          onclick="gtag('event', 'supp_polyhaven', {'event_category' : 'link_click', 'event_label' : 'supp_polyhaven'})">
+          onclick="gtag('event', 'supp_polyhaven', {'event_category' : 'link_click', 'event_label' : 'supp_polyhaven_turbo'})">
           <div class="card">
             <div class="card-image">
               <figure class="image is-4by3">
@@ -1365,7 +1313,7 @@ Experimental results show our method produces convincing light estimates across 
       </div>
       <div class="column">
         <a href="compare.html?dataset=indoor"
-          onclick="gtag('event', 'supp_indoor', {'event_category' : 'link_click', 'event_label' : 'supp_indoor'})">
+          onclick="gtag('event', 'supp_indoor', {'event_category' : 'link_click', 'event_label' : 'supp_indoor_turbo'})">
           <div class="card">
             <div class="card-image">
               <figure class="image is-4by3">
@@ -1387,7 +1335,7 @@ Experimental results show our method produces convincing light estimates across 
       </div>
       <div class="column">
         <a href="compare.html?dataset=array_of_spheres"
-          onclick="gtag('event', 'supp_arrayofsphere', {'event_category' : 'link_click', 'event_label' : 'supp_arrayofsphere'})">
+          onclick="gtag('event', 'supp_arrayofsphere', {'event_category' : 'link_click', 'event_label' : 'supp_arrayofsphere_turbo'})">
           <div class="card">
             <div class="card-image">
               <figure class="image is-4by3">
@@ -1415,11 +1363,11 @@ Experimental results show our method produces convincing light estimates across 
       <div class="hero-body">
         <p class="title">ComfyUI Supported!</p>
         <p> DiffusionLight's Turbo LoRA and Exposure LoRA are now compatible with ComfyUI's Load LoRA node. We also introduce custom nodes, including Ball2Envmap, that unproject chromeballs back to an environment map and Exposure2HDR, which combines different exposure images to HDR. Visit <a href="https://github.com/DiffusionLight/DiffusionLight-ComfyUI" class="has-text-primary " target="_blank">Github/DiffusionLight-ComfyUI</a> for more information </p>
-        <a href="https://github.com/DiffusionLight/DiffusionLight-ComfyUI"  target="_blank">
+        <a href="https://github.com/DiffusionLight/DiffusionLight-ComfyUI"  target="_blank" onclick="gtag('event', 'comfy_ui', {'event_category' : 'link_click', 'event_label' : 'comfy_ui_turbo_textlink'})">
           <img src="assets/images/comfyui_pipeline_preview.jpg" style="width: 100%; height: auto; margin: 2em 0;border-radius:12px;">
         </a>
         <div class="has-text-centered btn-more-result">
-              <a class="button is-medium is-link is-light " href="https://github.com/DiffusionLight/DiffusionLight-ComfyUI" style="font-weight: bold; font-size: 1.4em;"><i class="iconoir-github-circle" style="padding-right: 1rem;"></i> DiffusionLight-ComfyUI</a>
+              <a class="button is-medium is-link is-light " href="https://github.com/DiffusionLight/DiffusionLight-ComfyUI" style="font-weight: bold; font-size: 1.4em;" onclick="gtag('event', 'comfy_ui', {'event_category' : 'link_click', 'event_label' : 'comfy_ui_turbo_button'})" ><i class="iconoir-github-circle" style="padding-right: 1rem;"></i> DiffusionLight-ComfyUI</a>
         </div>
       </div>
     </div>
@@ -1443,7 +1391,7 @@ Experimental results show our method produces convincing light estimates across 
           </a>
         </header>
         <div class="card-content" style="max-width: calc(100vw - 3rem);">
-          <pre onclick="gtag('event', 'bibtex', {'event_category' : 'link_click', 'event_label' : 'main_body'})"
+          <pre onclick="gtag('event', 'bibtex', {'event_category' : 'link_click', 'event_label' : 'main_body_turbo'})"
             style="background-color:inherit;padding: 0px;" id="bibtex-info">@inproceedings{Chinchuthakun2025DiffusionLightTurbo,
   author = {Chinchuthakun, Worameth and Phongthawee, Pakkapon and Raj, Amit and Jampani, Varun and Khungurn, Pramook and Suwajanakorn, Supasorn},
   title = {DiffusionLight-Turbo: Accelerated Light Probes for Free via Single-Pass Chrome Ball Inpainting},
@@ -1460,10 +1408,10 @@ Experimental results show our method produces convincing light estimates across 
       <div class="container" style="text-align: center; vertica">
         <a href="https://vistec.ist/vision" target="_blank"><img src="assets/images/logo/vision.png"
             style="width: 130px; display: inline; margin: 0 100px;"
-            onclick="gtag('event', 'vll_logo', {'event_category' : 'link_click', 'event_label' : 'vll_logo'})"></a>
+            onclick="gtag('event', 'vll_logo', {'event_category' : 'link_click', 'event_label' : 'vll_logo_turbo'})"></a>
         <a href="https://vistec.ac.th/" target="_blank"><img src="assets/images/logo/vistec_color.svg"
             class="vistec-offset" style="width: 130px; display: inline; margin: 0 100px; position:relative; "
-            onclick="gtag('event', 'vistec_logo', {'event_category' : 'link_click', 'event_label' : 'vistec_logo'})"></a>
+            onclick="gtag('event', 'vistec_logo', {'event_category' : 'link_click', 'event_label' : 'vistec_logo_turbo'})"></a>
       </div>
     </div>
   </section>
@@ -1539,24 +1487,6 @@ Experimental results show our method produces convincing light estimates across 
         $(this).get(0).play();
       });
 
-      /*
-      $(".fader_container").mouseover(function (event) {
-        var src = $(this).children(".showMe").attr("src");
-        var newsrc = src;
-        $("#preview").attr("src", newsrc);
-        $("#preview").show();
-        // move preview to the same location as this
-        $("#preview").offset({
-          top: $(this).offset().top,
-          left: $(this).offset().left
-        });
-        // move preview to front most
-        $("#preview").css("z-index", 1000);
-      });
-      $(".fader_container").mouseout(function (event) {
-        $("#preview").hide();
-      });
-      */
 
     });
 
